@@ -1,5 +1,5 @@
 # Docker Files - Website
-This is a branch with the docker files to host [my site](https://theavid.dev) along with [my judge]((https://judge.theavid.dev) ([DMOJ](https://github.com/DMOJ/online-judge) clone). It runs the following containers:
+This is a branch with the docker files to host [my site](https://theavid.dev) along with [my judge](https://judge.theavid.dev) ([DMOJ](https://github.com/DMOJ/online-judge) clone). It runs the following containers:
  * `nginx` - the nginx web server for serving the websites and static files.
  * `dmoj` - the dmoj site (`online-judge`) acting as the frontend for judges.
  * `bridge` - the bridge to connect the dmoj frontend site with judges.
