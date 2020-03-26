@@ -1,0 +1,173 @@
+version: '3'
+
+services:
+  # Web server and certificate creation
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      # Global
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+      # Dev
+      - sitestatic:/site/static
+      - sitemedia:/site/media
+
+      # DMOJ
+      - uwsgi_volume:/uwsgi
+      - ./nginx/online-judge:/online-judge
+      - dmojresources:/online-judge/resources
+      - dmojstatic:/online-judge/static
+      - pdfcache:/pdfcache
+      #- mathoid_cache:/mathoid-cache
+    depends_on:
+      - site
+      - dmoj
+    networks:
+      - nginx_network
+      - websocket_network
+    container_name: nginx
+
+  certbot:
+    image: certbot/dns-digitalocean
+    volumes:
+      - ./certbot/do:/do
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+  # Personal development site
+  site:
+    build: ./site
+    image: site:site
+    restart: always
+    volumes:
+      - sitestatic:/site/static
+      - sitemedia:/site/media
+    networks:
+      - nginx_network
+      - sitedb_network
+    depends_on:
+      - sitedb
+    container_name: site
+
+  sitedb:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=sitedb
+      - POSTGRES_USER=sitedbuser
+      - POSTGRES_PASSWORD=YOUR POSTGRES PASSWORD
+    networks:
+      - sitedb_network
+    volumes:
+      - sitedb_volume:/var/lib/postgresql/data
+    container_name: sitedb
+
+  # Judge site
+  dmoj:
+    build: ./dmoj
+    image: dmoj:dmoj
+    restart: always
+    volumes:
+      - uwsgi_volume:/uwsgi
+      - dmojstatic:/online-judge/static
+      - dmojresources:/online-judge/resources
+      - phantombin:/phantomjs
+      - pdfcache:/pdfcache
+      #- mathoid_cache:/mathoid_cache
+    networks:
+      - dmojdb_network
+      - nginx_network
+      - bridge_network
+      - websocket_network
+      #- mathoid_network
+    depends_on:
+      - dmojdb
+      - bridge
+      - websocket
+      - phantomjs
+      #- mathoid
+    container_name: dmoj
+
+  dmojdb:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'dmojdb'
+      MYSQL_USER: 'dmoj'
+      MYSQL_PASSWORD: 'YOUR DATABASE PASSWORD'
+      MYSQL_ROOT_PASSWORD: 'YOUR DATABASE ROOT PASSWORD'
+    networks:
+      - dmojdb_network
+    volumes:
+      - dmojdb_volume:/var/lib/mysql
+    container_name: dmojdb
+  
+  bridge:
+    build: ./bridge
+    image: bridge:bridge
+    restart: always
+    ports:
+      - 9999:9999
+    networks:
+      - dmojdb_network
+      - bridge_network
+      - websocket_network
+    depends_on:
+      - websocket
+      - dmojdb
+    container_name: bridge
+
+  websocket:
+    build: ./websocket
+    image: websocket:websocket
+    restart: always
+    networks:
+      - websocket_network
+    container_name: websocket
+
+  phantomjs:
+    build: ./phantomjs
+    image: phantomjs:phantomjs
+    restart: always
+    volumes:
+      - phantombin:/phantomjs/bin
+    container_name: phantomjs
+
+  #mathoid:
+  #  image: physikerwelt/mathoid
+  #  hostname: mathoid
+  #  networks:
+  #   - mathoid_network
+  #  container_name: mathoid
+
+networks:
+  nginx_network:
+    driver: bridge
+  sitedb_network:
+    driver: bridge
+  dmojdb_network:
+    driver: bridge
+  bridge_network:
+    driver: bridge
+  websocket_network:
+    driver: bridge
+  #mathoid_network:
+  #  driver: bridge
+
+volumes:
+  sitestatic:
+  sitemedia:
+  sitedb_volume:
+  uwsgi_volume:
+  dmojstatic:
+  dmojresources:
+  dmojdb_volume:
+  phantombin:
+  pdfcache:
+  #mathoid_cache:
