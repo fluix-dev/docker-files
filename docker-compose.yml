@@ -8,92 +8,51 @@ services:
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     ports:
       - 80:80
-      - 443:443
     volumes:
       # Global
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
 
-      # Dev
-      - sitestatic:/site/static
-      - sitemedia:/site/media
-
       # DMOJ
       - uwsgi_volume:/uwsgi
-      - ./nginx/online-judge:/online-judge
-      - dmojresources:/online-judge/resources
-      - dmojstatic:/online-judge/static
+      - ./repo:/online-judge
       - pdfcache:/pdfcache
-      #- mathoid_cache:/mathoid-cache
     depends_on:
-      - site
       - dmoj
     networks:
       - nginx_network
       - websocket_network
     container_name: nginx
 
-  certbot:
-    image: certbot/dns-digitalocean
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    volumes:
-      - ./certbot/do:/do
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
+  base:
+    build:
+      context: .
+      dockerfile: ./base/Dockerfile
+    image: dmoj-base
 
-  # Personal development site
-  site:
-    build: ./site
-    image: site:site
-    restart: always
-    volumes:
-      - sitestatic:/site/static
-      - sitemedia:/site/media
-    networks:
-      - nginx_network
-      - sitedb_network
-    depends_on:
-      - sitedb
-    container_name: site
-
-  sitedb:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_DB=sitedb
-      - POSTGRES_USER=sitedbuser
-      - POSTGRES_PASSWORD=YOUR POSTGRES PASSWORD
-    networks:
-      - sitedb_network
-    volumes:
-      - sitedb_volume:/var/lib/postgresql/data
-    container_name: sitedb
-
-  # Judge site
   dmoj:
     build: ./dmoj
     image: dmoj:dmoj
     restart: always
+    environment:
+      - SECRET_KEY=YOUR SECRET KEY
+      - DB_PASSWORD=YOUR DB PASSWORD
     volumes:
       - uwsgi_volume:/uwsgi
-      - dmojstatic:/online-judge/static
-      - dmojresources:/online-judge/resources
+      - ./repo:/online-judge
       - phantombin:/phantomjs
       - pdfcache:/pdfcache
-      #- mathoid_cache:/mathoid_cache
     networks:
       - dmojdb_network
       - nginx_network
       - bridge_network
       - websocket_network
-      #- mathoid_network
     depends_on:
       - dmojdb
       - bridge
       - websocket
       - phantomjs
-      #- mathoid
     container_name: dmoj
 
   dmojdb:
@@ -102,8 +61,8 @@ services:
     environment:
       MYSQL_DATABASE: 'dmojdb'
       MYSQL_USER: 'dmoj'
-      MYSQL_PASSWORD: 'YOUR DATABASE PASSWORD'
-      MYSQL_ROOT_PASSWORD: 'YOUR DATABASE ROOT PASSWORD'
+      MYSQL_PASSWORD: 'YOUR DB PASSWORD'
+      MYSQL_ROOT_PASSWORD: 'YOUR ROOT PASSWORD'
     networks:
       - dmojdb_network
     volumes:
@@ -116,6 +75,11 @@ services:
     restart: always
     ports:
       - 9999:9999
+    environment:
+      - SECRET_KEY=YOUR SECRET KEY
+      - DB_PASSWORD=YOUR DB PASSWORD
+    volumes:
+      - ./repo:/online-judge
     networks:
       - dmojdb_network
       - bridge_network
@@ -129,6 +93,8 @@ services:
     build: ./websocket
     image: websocket:websocket
     restart: always
+    volumes:
+      - ./repo:/online-judge
     networks:
       - websocket_network
     container_name: websocket
@@ -136,22 +102,12 @@ services:
   phantomjs:
     build: ./phantomjs
     image: phantomjs:phantomjs
-    restart: always
     volumes:
       - phantombin:/phantomjs/bin
     container_name: phantomjs
 
-  #mathoid:
-  #  image: physikerwelt/mathoid
-  #  hostname: mathoid
-  #  networks:
-  #   - mathoid_network
-  #  container_name: mathoid
-
 networks:
   nginx_network:
-    driver: bridge
-  sitedb_network:
     driver: bridge
   dmojdb_network:
     driver: bridge
@@ -159,17 +115,9 @@ networks:
     driver: bridge
   websocket_network:
     driver: bridge
-  #mathoid_network:
-  #  driver: bridge
 
 volumes:
-  sitestatic:
-  sitemedia:
-  sitedb_volume:
   uwsgi_volume:
-  dmojstatic:
-  dmojresources:
   dmojdb_volume:
   phantombin:
   pdfcache:
-  #mathoid_cache:
