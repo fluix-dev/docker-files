@@ -12,7 +12,7 @@ This is a branch with the docker files to host [my judge](https://judge.theavid.
 ## Installation
 #### Global:
 Clone this branch, pull submodule repositories, and apply PhantomJS patch with:
-```ruby
+```sh
 git clone -b website https://github.com/TheAvidDev/docker-files.git
 cd docker-files
 git submodule init
