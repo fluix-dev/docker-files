@@ -6,7 +6,7 @@ services:
     image: nginx
     restart: always
     ports:
-      - 80:80
+      - 81:81
     volumes:
       # Global
       - ./nginx/conf.d:/etc/nginx/conf.d
