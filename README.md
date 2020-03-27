@@ -1,67 +1,86 @@
-# Docker Files - Website
-This is a branch with the docker files to host [my site](https://theavid.dev) along with [my judge](https://judge.theavid.dev) ([DMOJ](https://github.com/DMOJ/online-judge) clone). It runs the following containers:
+# Docker Files - DMOJ
+This is a branch with the docker files to host [my judge](https://judge.theavid.dev) ([DMOJ](https://github.com/DMOJ/online-judge) clone). It runs the following containers:
  * `nginx` - the nginx web server for serving the websites and static files.
  * `dmoj` - the dmoj site (`online-judge`) acting as the frontend for judges.
  * `bridge` - the bridge to connect the dmoj frontend site with judges.
  * `websocket` - websocket for live updates on the site.
- * `site` - personal website with portfolio, about section, and contact form.
  * `dmojdb` - dmoj database.
- * `sitedb` - personal website database.
  * `phantomjs` - phantomjs image to generate pdf versions of dmoj site problems.
- * `certbot` - a certbot image for creating certificates.
+ 
+ **IMPORANT:** this branch does not contain a DMOJ `judge`, only the frontend website. For judges, please see [their documentation](https://docs.dmoj.ca/#/judge/linux_installation) and connect them to port `9999`.
  
 ## Installation
 #### Global:
-Clone this branch with:
+Clone this branch, pull submodule repositories, and apply PhantomJS patch with:
 ```
 git clone -b website https://github.com/TheAvidDev/docker-files.git
+cd docker-files
+git submodule init
+git submodule update
+curl -L https://gist.githubusercontent.com/TheAvidDev/4b9394e948869ccf8117703dc288c6ef/raw/29681cb75b0cbd49ba09e64b6208018027e283b9/py | git apply
 ```
 
 #### Website secrets:
-Add Dango secret keys to `local_settings.py` in `site/` and `dmoj/`. This is done by setting the `SECRET_KEY` variable.
-
-Set the postgres password by setting the `PASSWORD` field in `site/local_settings.py` and `POSTGRES_PASSWORD` in `docker-compose.yml`.
-
-Set the MariaDB root password in `docker-compose.yml` by modifying the `MYSQL_ROOT_PASSWORD` environment variable.
-
-Set the MariaDB dmoj password by setting the `PASSWORD` field in `dmoj/local_settings.py` and `MYSQL_PASSWORD` field in `docker-compose.yml`.
-
-#### Nginx ssl conf:
-You can follow the tutorial in [this article](https://medium.com/@pentacent/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71). Keep in mind that the docker portions are already completed, so only the certificate generation is required. This final step is described below:
-
-Make a `certbot` folder with:
+Define the Django secret keys and database passwords in `docker-compose.yml`. This means changing the `environment` sections from:
 ```
-mkdir certbot
+SECRET_KEY=YOUR SECRET KEY
+DB_PASSWORD=YOUR DB PASSWORD
+MYSQL_PASSWORD: 'YOUR DB PASSWORD'
+MYSQL_ROOT_PASSWORD: 'YOUR ROOT PASSWORD'
 ```
 
-Download the [`init-letsencrypt.sh`](https://raw.githubusercontent.com/wmnnd/nginx-certbot/master/init-letsencrypt.sh) script with:
-
-```
-curl -L https://raw.githubusercontent.com/wmnnd/nginx-certbot/master/init-letsencrypt.sh > init-letsencrypt.sh
-```
-
-Edit the script (with something like `nano`) and change the `domains=(example.org www.example.org)` line to your domains. Also change `data_path="./data/certbot"` to `data_path="./certbot"`.
-
-Make the script executable and run it:
-```
-chmod +x init-letsencrypt.sh; sudo ./init-letsencrypt.sh
-```
+Keep in mind that `YOUR DB PASSWORD` should be the same, `YOUR ROOT PASSWORD` can be anything, and in both instances of `YOUR SECRET KEY`, the same Django secret key should be used.
 
 #### Final docker isntallation:
-Run `./scripts/install.sh` to build the docker images and dmoj database.
-
-Migrate the `site` database with:
-```
-docker-compose run --rm --entrypoint "python manage.py migrate --settings=mysite.local_settings" site
-```
-
-## Running
-Start these services with:
-```
-docker-compose up -d
-```
+Run `./scripts/install.sh` to build the docker images and dmoj database. This will migrate all necessary migrations and build static files. Keep in mind, you may have to run this twice as the `dmojdb` container takes some time to initalize.
 
 ## Maintaining
-To update everything, run `./scripts/update.sh`. This will also remake resources and static files for `dmoj`.
+To run everything, use the following in the clone folder:
+```
+docker-compose up
+```
 
-To update specific images, run `docker-compose build --no-cache [name]`.
+To update migrations, run:
+```
+./scripts/migrate.sh
+```
+
+To compile and collect static files, run:
+```
+./scripts/makestatic.sh
+```
+
+## Nginx Configuration
+This image exposes an nginx webserver on port `81`. You should install another nginx webserver on the host (or a separate container) that proxies connections to this one. An example configuration would look as such:
+```sh
+server {
+    # Remove the two lines below to only allow ssl connections.
+    # If you do this, you should uncomment, and update the final ssl section.
+    listen 80;
+    listen [::]:80;
+    server_name judge.theavid.dev;
+
+    add_header X-UA-Compatible "IE=Edge,chrome=1";
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+
+    location / {
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        proxy_set_header Host $http_host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_pass http://127.0.0.1:81/;
+    }
+
+    # For ssl connections, uncomment and update the following.
+    #listen 443 ssl;
+    #ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    #ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    #include /etc/letsencrypt/options-ssl-nginx.conf;
+    #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+```
