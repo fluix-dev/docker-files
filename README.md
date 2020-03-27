@@ -37,7 +37,7 @@ Run `./scripts/install.sh` to build the docker images and dmoj database. This wi
 ## Maintaining
 To run everything, use the following in the clone folder:
 ```
-docker-compose up
+docker-compose up -d
 ```
 
 To update migrations, run:
