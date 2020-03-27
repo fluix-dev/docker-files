@@ -12,7 +12,7 @@ This is a branch with the docker files to host [my judge](https://judge.theavid.
 ## Installation
 #### Global:
 Clone this branch, pull submodule repositories, and apply PhantomJS patch with:
-```
+```ruby
 git clone -b website https://github.com/TheAvidDev/docker-files.git
 cd docker-files
 git submodule init
@@ -52,7 +52,7 @@ To compile and collect static files, run:
 
 ## Nginx Configuration
 This image exposes an nginx webserver on port `81`. You should install another nginx webserver on the host (or a separate container) that proxies connections to this one. An example configuration would look as such:
-```sh
+```nginx
 server {
     # Remove the two lines below to only allow ssl connections.
     # If you do this, you should uncomment, and update the final ssl section.
