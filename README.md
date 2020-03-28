@@ -20,6 +20,13 @@ git submodule update
 curl -L https://gist.githubusercontent.com/TheAvidDev/4b9394e948869ccf8117703dc288c6ef/raw/29681cb75b0cbd49ba09e64b6208018027e283b9/py | git apply
 ```
 
+Move config files into proper folders:
+```
+mv config.js repo/websocket/
+mv uwsgi.ini repo/
+mv local_settings.py repo/dmoj/
+```
+
 #### Website secrets:
 Define the Django secret keys and database passwords in `docker-compose.yml`. This means changing the `environment` sections from:
 ```
