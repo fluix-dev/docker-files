@@ -100,4 +100,4 @@ server {
     #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
 ```
-You can update this by either modifying the `ports:` directive of the `docker-compose.yml` file and/or by changing the nginx config in `/nginx/conf.d/default.conf`.
+You can modify on which port nginx runs or exposes itself on by either modifying the `ports:` directive of the `docker-compose.yml` file and/or by changing the nginx config in `/nginx/conf.d/default.conf`.
