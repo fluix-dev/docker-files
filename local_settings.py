@@ -144,10 +144,10 @@ TERMS_OF_SERVICE_URL = '//dmoj.ca/tos' # Use a flatpage.
 # The judge connection address and port; where the judges will connect to the site.
 # You should change this to something your judges can actually connect to 
 # (e.g., a port that is unused and unblocked by a firewall).
-#BRIDGED_JUDGE_ADDRESS = [('localhost', 9999)]
+BRIDGED_JUDGE_ADDRESS = [('bridge', 9999)]
 
 # The bridged daemon bind address and port to communicate with the site.
-#BRIDGED_DJANGO_ADDRESS = [('localhost', 9998)]
+BRIDGED_DJANGO_ADDRESS = [('bridge', 9998)]
 
 ## DMOJ features.
 # Set to True to enable full-text searching for problems.
@@ -312,19 +312,3 @@ LOGGING = {
 ## ======== Custom Configuration ========
 # You may add whatever django configuration you would like here.
 # Do try to keep it separate so you can quickly patch in new settings.
-
-# The URL Mathoid is running on
-#MATHOID_URL = 'mathoid:10042'
-# A directory accessible by the user running Mathoid, as well as the web (nginx) user.
-# For optimal performance, change this to something more persistant than /tmp
-#MATHOID_CACHE_ROOT = '/mathoid_cache'
-# The URL base MATHOID_CACHE_ROOT is configured to be served under in your webserver. For
-# example, if /tmp/mathoid_cache/render.png exists, example.com/mathoid/render.png should
-# serve it.
-#MATHOID_CACHE_URL = '//judge.theavid.dev/mathoid/'
-
-
-BRIDGED_JUDGE_ADDRESS = [('bridge', 9999)]
-BRIDGED_JUDGE_PROXIES = None
-BRIDGED_DJANGO_ADDRESS = [('bridge', 9998)]
-BRIDGED_DJANGO_CONNECT = None
