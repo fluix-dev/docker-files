@@ -14,8 +14,8 @@ services:
     depends_on:
       - dmoj
     networks:
-      - nginx_network
-      - websocket_network
+      - nginx_websocket
+      - nginx_dmoj
     container_name: nginx
 
   base:
@@ -43,10 +43,10 @@ services:
       - phantombin:/phantomjs
       - pdfcache:/pdfcache
     networks:
-      - dmojdb_network
-      - nginx_network
-      - bridge_network
-      - websocket_network
+      - nginx_websocket
+      - dmoj_bridge
+      - dmoj_dmojdb
+      - dmoj_websocket
     depends_on:
       - dmojdb
       - websocket
@@ -58,7 +58,8 @@ services:
     restart: always
     environment: *base_env
     networks:
-      - dmojdb_network
+      - dmoj_dmojdb
+      - bridge_dmojdb
     volumes:
       - dmojdb_volume:/var/lib/mysql
     container_name: dmojdb
@@ -73,9 +74,9 @@ services:
       - ./repo:/online-judge
     environment: *base_env
     networks:
-      - dmojdb_network
-      - bridge_network
-      - websocket_network
+      - dmoj_bridge
+      - bridge_dmojdb
+      - bridge_websocket
     depends_on:
       - websocket
       - dmojdb
@@ -89,7 +90,9 @@ services:
     volumes:
       - ./repo:/online-judge
     networks:
-      - websocket_network
+      - nginx_websocket
+      - dmoj_websocket
+      - bridge_websocket
     container_name: websocket
 
   phantomjs:
@@ -100,14 +103,21 @@ services:
     container_name: phantomjs
 
 networks:
-  nginx_network:
+  nginx_websocket:
     driver: bridge
-  dmojdb_network:
+  nginx_dmoj:
     driver: bridge
-  bridge_network:
+  dmoj_websocket:
     driver: bridge
-  websocket_network:
+  dmoj_bridge:
     driver: bridge
+  dmoj_dmojdb:
+    driver: bridge
+  bridge_dmojdb:
+    driver: bridge
+  bridge_websocket:
+    driver: bridge
+
 
 volumes:
   uwsgi_volume:
