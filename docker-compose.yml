@@ -12,6 +12,7 @@ services:
       - uwsgi_volume:/uwsgi
       - ./repo:/online-judge
       - pdfcache:/pdfcache
+      - cache:/cache
     networks:
       - websocket_net
       - nginx_dmoj
@@ -43,17 +44,20 @@ services:
       - ./repo:/online-judge
       - phantombin:/phantomjs
       - pdfcache:/pdfcache
+      - cache:/cache
     networks:
       - nginx_dmoj
       - bridge_net
       - dmoj_dmojdb
       - dmoj_redis
+      - dmoj_mathoid
       - websocket_net
     depends_on:
       - dmojdb
       - websocket
       - phantomjs
       - celery
+      - mathoid
 
   dmojdb:
     container_name: dmojdb
@@ -125,6 +129,14 @@ services:
       - dmojdb
       - redis
 
+  mathoid:
+    container_name: mathoid
+    image: mathoid:mathoid
+    build: ./mathoid
+    restart: always
+    networks:
+      - dmoj_mathoid
+
 networks:
   nginx_dmoj:
     driver: bridge
@@ -136,6 +148,8 @@ networks:
     driver: bridge
   dmoj_redis:
     driver: bridge
+  dmoj_mathoid:
+    driver: bridge
   celery_redis:
     driver: bridge
   celery_dmojdb:
@@ -145,5 +159,6 @@ networks:
 volumes:
   uwsgi_volume:
   dmojdb_volume:
+  cache:
   phantombin:
   pdfcache:

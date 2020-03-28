@@ -317,3 +317,9 @@ LOGGING = {
 # Do try to keep it separate so you can quickly patch in new settings.
 CELERY_BROKER_URL = 'redis://redis:6379'
 CELERY_RESULT_BACKEND = 'redis://redis:6379'
+
+## ======== Mathoid Configuration ========
+# Documentation: https://github.com/wikimedia/mathoid
+MATHOID_URL = 'http://mathoid:10044'
+MATHOID_CACHE_ROOT = '/cache/mathoid/'
+MATHOID_CACHE_URL = '//{host}/mathoid/'.format(host=HOST)
