@@ -67,7 +67,7 @@ services:
     volumes:
       - dmojdb_volume:/var/lib/mysql
     container_name: dmojdb
-  
+
   bridge:
     build: ./bridge
     image: bridge:bridge
