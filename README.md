@@ -8,6 +8,7 @@ This is a branch with the docker files for running the [DMOJ](https://github.com
  * `phantomjs` - phantomjs image to generate pdf versions of dmoj site problems.
  * `celery` - celery scheduler image.
  * `redis` - dependancy for celery handling data storage.
+ * `mathoid` - wikimedia mathoid rendering.
  
  **IMPORANT:** this branch does not contain a DMOJ [`judge-server`](https://github.com/DMOJ/judge-server), only the frontend website. For judges, please see [their documentation](https://docs.dmoj.ca/#/judge/linux_installation) and connect them to port `9999` which the `bridge` container exposes.
  
