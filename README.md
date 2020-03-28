@@ -1,23 +1,22 @@
 # Docker Files - DMOJ
-This is a branch with the docker files to host [my judge](https://judge.theavid.dev) ([DMOJ](https://github.com/DMOJ/online-judge) clone). It runs the following containers:
+This is a branch with the docker files for running the [DMOJ](https://github.com/DMOJ/online-judge) frontend. It runs the following containers:
  * `nginx` - the nginx web server for serving the websites and static files.
  * `dmoj` - the dmoj site (`online-judge`) acting as the frontend for judges.
+ * `dmojdb` - dmoj database.
  * `bridge` - the bridge to connect the dmoj frontend site with judges.
  * `websocket` - websocket for live updates on the site.
- * `dmojdb` - dmoj database.
  * `phantomjs` - phantomjs image to generate pdf versions of dmoj site problems.
  
- **IMPORANT:** this branch does not contain a DMOJ `judge`, only the frontend website. For judges, please see [their documentation](https://docs.dmoj.ca/#/judge/linux_installation) and connect them to port `9999`.
+ **IMPORANT:** this branch does not contain a DMOJ [`judge-server`](https://github.com/DMOJ/judge-server), only the frontend website. For judges, please see [their documentation](https://docs.dmoj.ca/#/judge/linux_installation) and connect them to port `9999` which the `bridge` container exposes.
  
 ## Installation
 #### Global:
-Clone this branch, pull submodule repositories, and apply PhantomJS patch with:
+Clone this branch and pull submodule repositories:
 ```sh
 git clone -b website https://github.com/TheAvidDev/docker-files.git
 cd docker-files
 git submodule init
 git submodule update
-curl -L https://gist.githubusercontent.com/TheAvidDev/4b9394e948869ccf8117703dc288c6ef/raw/29681cb75b0cbd49ba09e64b6208018027e283b9/py | git apply
 ```
 
 Move config files into proper folders:
@@ -36,7 +35,7 @@ MYSQL_PASSWORD: 'YOUR DB PASSWORD'
 MYSQL_ROOT_PASSWORD: 'YOUR ROOT PASSWORD'
 ```
 
-Keep in mind that `YOUR DB PASSWORD` should be the same, `YOUR ROOT PASSWORD` can be anything, and in both instances of `YOUR SECRET KEY`, the same Django secret key should be used.
+Keep in mind that both instances of `YOUR DB PASSWORD` should be the same, `YOUR ROOT PASSWORD` can be anything, and in both instances of `YOUR SECRET KEY`, the same Django secret key should be used.
 
 #### Final docker isntallation:
 Run `./scripts/install.sh` to build the docker images and dmoj database. This will migrate all necessary migrations and build static files. Keep in mind, you may have to run this twice as the `dmojdb` container takes some time to initalize.
@@ -57,12 +56,22 @@ To compile and collect static files, run:
 ./scripts/makestatic.sh
 ```
 
+#### Update Procedure
+The probable update procedure would be to pull the repo and then run either the migrate script (if a migration was added) and/or the static compilation and collection script (if static files were updated).
+
+It may also be necessary to update (rebuild) the images if, for example, python requirements have changed. This can be done by building the docker images without using the docker cache.
+```
+docker-compose build --no-cache
+```
+
+Keep in mind that the containers running said images will have to be turned off (either killed with `docker kill` or brought down `docker-compose down`).
+
 ## Nginx Configuration
-This image exposes an nginx webserver on port `81`. You should install another nginx webserver on the host (or a separate container) that proxies connections to this one. An example configuration would look as such:
+This image exposes an nginx webserver on port `81`. You should install another nginx webserver on the host (or a separate container) that proxies connections to this one. An example configuration for that nginx instance would look as such:
 ```nginx
 server {
     # Remove the two lines below to only allow ssl connections.
-    # If you do this, you should uncomment, and update the final ssl section.
+    # If you do this, you should uncomment, and update, the final ssl section.
     listen 80;
     listen [::]:80;
     server_name judge.theavid.dev;
@@ -91,3 +100,4 @@ server {
     #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
 ```
+You can update this by either modifying the `ports:` directive of the `docker-compose.yml` file and/or by changing the nginx config in `/nginx/conf.d/default.conf`.
