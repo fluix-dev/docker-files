@@ -31,15 +31,14 @@ mv local_settings.py repo/dmoj/
 
 #### Website secrets:
 Define the Django secret keys and database passwords in `docker-compose.yml`. This means changing the `environment` sections from:
-```
-environment: &base_env
-  MYSQL_DATABASE: 'dmojdb'
-  MYSQL_USER: 'dmoj'
-  MYSQL_PASSWORD: 'DATABASE DMOJ PASSWORD'
-  MYSQL_ROOT_PASSWORD: 'DATABASE ROOT PASSWORD'
-  SECRET_KEY: 'DJANGO SECRET KEY'
-  HOST: 'WEBSITE HOSTNAME'
-  DEBUG: 0
+```py
+MYSQL_DATABASE: 'dmojdb'
+MYSQL_USER: 'dmoj'
+MYSQL_PASSWORD: 'DATABASE DMOJ PASSWORD'
+MYSQL_ROOT_PASSWORD: 'DATABASE ROOT PASSWORD'
+SECRET_KEY: 'DJANGO SECRET KEY'
+HOST: 'WEBSITE HOSTNAME'
+DEBUG: 0
 ```
 
 The `MYSQL_DATABASE`, `MYSQL_USER`, and `DEBUG` can be left alone. Change the latter to `1` for Django testing. Set `HOST` to your hostname, such as `judge.theavid.dev`. `MYSQL_PASSWORD` is the password for the databse which images will use. While the database is only accessible locally, it's still a good idea to make a good password. The `MYSQL_ROOT_PASSWORD` is unused within DMOJ but is required for mariadb. Finally, `SECRET_KEY` is the Djano secret key. It is vital that it is kept secure.
