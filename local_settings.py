@@ -11,11 +11,11 @@ import os
 # SECURITY WARNING: keep the secret key used in production secret!
 # You may use <http://www.miniwebtool.com/django-secret-key-generator/>
 # to generate this key.
-SECRET_KEY = os.environ.get('SECRET_KEY', ' ')
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', '0') == '1'
-HOST = os.environ.get('HOST', '')
+HOST = os.environ['HOST']
 
 # Uncomment and set to the domain names this site is intended to serve.
 # You must do this once you set DEBUG to False.
@@ -38,9 +38,9 @@ CACHES = {
 DATABASES = {
      'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dmojdb',
-        'USER': 'dmoj',
-        'PASSWORD': os.environ['DB_PASSWORD'],
+        'NAME': os.environ['MYSQL_DATABASE'],
+        'USER': os.environ['MYSQL_USER'],
+        'PASSWORD': os.environ['MYSQL_PASSWORD'],
         'HOST': 'dmojdb',
         'OPTIONS': {
             'charset': 'utf8mb4',
