@@ -2,6 +2,7 @@ version: '3'
 
 services:
   nginx:
+    container_name: nginx
     image: nginx:alpine
     restart: always
     ports:
@@ -11,14 +12,14 @@ services:
       - uwsgi_volume:/uwsgi
       - ./repo:/online-judge
       - pdfcache:/pdfcache
-    depends_on:
-      - dmoj
     networks:
       - websocket_net
       - nginx_dmoj
-    container_name: nginx
+    depends_on:
+      - dmoj
 
   base:
+    image: dmoj-base
     build:
       context: .
       dockerfile: ./base/Dockerfile
@@ -30,11 +31,11 @@ services:
       SECRET_KEY: 'DJANGO SECRET KEY'
       HOST: 'WEBSITE HOSTNAME'
       DEBUG: 0
-    image: dmoj-base
 
   dmoj:
-    build: ./dmoj
+    container_name: dmoj
     image: dmoj:dmoj
+    build: ./dmoj
     restart: always
     environment: *base_env
     volumes:
@@ -53,29 +54,29 @@ services:
       - websocket
       - phantomjs
       - celery
-    container_name: dmoj
 
   dmojdb:
+    container_name: dmojdb
     image: mariadb
     restart: always
     environment: *base_env
+    volumes:
+      - dmojdb_volume:/var/lib/mysql
     networks:
       - dmoj_dmojdb
       - celery_dmojdb
       - bridge_net
-    volumes:
-      - dmojdb_volume:/var/lib/mysql
-    container_name: dmojdb
 
   bridge:
-    build: ./bridge
+    container_name: bridge
     image: bridge:bridge
+    build: ./bridge
     restart: always
+    environment: *base_env
     ports:
       - 9999:9999
     volumes:
       - ./repo:/online-judge
-    environment: *base_env
     networks:
       - bridge_net
       - websocket_net
@@ -83,36 +84,36 @@ services:
       - websocket
       - dmojdb
       - dmoj
-    container_name: bridge
 
   websocket:
-    build: ./websocket
+    container_name: websocket
     image: websocket:websocket
+    build: ./websocket
     restart: always
     volumes:
       - ./repo:/online-judge
     networks:
       - websocket_net
-    container_name: websocket
 
   phantomjs:
-    build: ./phantomjs
+    container_name: phantomjs
     image: phantomjs:phantomjs
+    build: ./phantomjs
     volumes:
       - phantombin:/phantomjs/bin
-    container_name: phantomjs
 
   redis:
+    container_name: redis
     image: redis:alpine
     restart: always
     networks:
       - celery_redis
       - dmoj_redis
-    container_name: redis
 
   celery:
-    build: ./celery
+    container_name: celery
     image: celery:celery
+    build: ./celery
     restart: always
     environment: *base_env
     volumes:
@@ -123,7 +124,6 @@ services:
     depends_on:
       - dmojdb
       - redis
-    container_name: celery
 
 networks:
   nginx_dmoj:
