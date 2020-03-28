@@ -14,7 +14,7 @@ services:
     depends_on:
       - dmoj
     networks:
-      - nginx_websocket
+      - websocket_net
       - nginx_dmoj
     container_name: nginx
 
@@ -43,14 +43,16 @@ services:
       - phantombin:/phantomjs
       - pdfcache:/pdfcache
     networks:
-      - nginx_websocket
-      - dmoj_bridge
+      - nginx_dmoj
+      - bridge_net
       - dmoj_dmojdb
-      - dmoj_websocket
+      - dmoj_redis
+      - websocket_net
     depends_on:
       - dmojdb
       - websocket
       - phantomjs
+      - celery
     container_name: dmoj
 
   dmojdb:
@@ -59,7 +61,8 @@ services:
     environment: *base_env
     networks:
       - dmoj_dmojdb
-      - bridge_dmojdb
+      - celery_dmojdb
+      - bridge_net
     volumes:
       - dmojdb_volume:/var/lib/mysql
     container_name: dmojdb
@@ -74,9 +77,8 @@ services:
       - ./repo:/online-judge
     environment: *base_env
     networks:
-      - dmoj_bridge
-      - bridge_dmojdb
-      - bridge_websocket
+      - bridge_net
+      - websocket_net
     depends_on:
       - websocket
       - dmojdb
@@ -90,9 +92,7 @@ services:
     volumes:
       - ./repo:/online-judge
     networks:
-      - nginx_websocket
-      - dmoj_websocket
-      - bridge_websocket
+      - websocket_net
     container_name: websocket
 
   phantomjs:
@@ -102,20 +102,43 @@ services:
       - phantombin:/phantomjs/bin
     container_name: phantomjs
 
+  redis:
+    image: redis:alpine
+    restart: always
+    networks:
+      - celery_redis
+      - dmoj_redis
+    container_name: redis
+
+  celery:
+    build: ./celery
+    image: celery:celery
+    restart: always
+    environment: *base_env
+    volumes:
+      - ./repo:/online-judge
+    networks:
+      - celery_redis
+      - celery_dmojdb
+    depends_on:
+      - dmojdb
+      - redis
+    container_name: celery
+
 networks:
-  nginx_websocket:
-    driver: bridge
   nginx_dmoj:
     driver: bridge
-  dmoj_websocket:
+  websocket_net:
     driver: bridge
-  dmoj_bridge:
+  bridge_net:
     driver: bridge
   dmoj_dmojdb:
     driver: bridge
-  bridge_dmojdb:
+  dmoj_redis:
     driver: bridge
-  bridge_websocket:
+  celery_redis:
+    driver: bridge
+  celery_dmojdb:
     driver: bridge
 
 
