@@ -146,9 +146,11 @@ TERMS_OF_SERVICE_URL = '//dmoj.ca/tos' # Use a flatpage.
 # You should change this to something your judges can actually connect to 
 # (e.g., a port that is unused and unblocked by a firewall).
 BRIDGED_JUDGE_ADDRESS = [('bridge', 9999)]
+BRIDGED_JUDGE_PROXIES = None
 
 # The bridged daemon bind address and port to communicate with the site.
-BRIDGED_DJANGO_CONNECT = [('bridge', 9998)]
+BRIDGED_DJANGO_ADDRESS = [('bridge', 9998)]
+BRIDGED_DJANGO_CONNECT = None
 
 ## DMOJ features.
 # Set to True to enable full-text searching for problems.
