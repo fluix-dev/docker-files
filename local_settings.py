@@ -22,8 +22,6 @@ ALLOWED_HOSTS = ['judge.theavid.dev']
 
 # Optional apps that DMOJ can make use of.
 INSTALLED_APPS += (
-    'discord_integration',
-    'solo',
 )
 
 # Caching. You can use memcached or redis instead.
