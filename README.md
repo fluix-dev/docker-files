@@ -6,6 +6,8 @@ This is a branch with the docker files for running the [DMOJ](https://github.com
  * `bridge` - the bridge to connect the dmoj frontend site with judges.
  * `websocket` - websocket for live updates on the site.
  * `phantomjs` - phantomjs image to generate pdf versions of dmoj site problems.
+ * `celery` - celery scheduler image.
+ * `redis` - dependancy for celery handling data storage.
  
  **IMPORANT:** this branch does not contain a DMOJ [`judge-server`](https://github.com/DMOJ/judge-server), only the frontend website. For judges, please see [their documentation](https://docs.dmoj.ca/#/judge/linux_installation) and connect them to port `9999` which the `bridge` container exposes.
  
@@ -29,13 +31,17 @@ mv local_settings.py repo/dmoj/
 #### Website secrets:
 Define the Django secret keys and database passwords in `docker-compose.yml`. This means changing the `environment` sections from:
 ```
-SECRET_KEY=YOUR SECRET KEY
-DB_PASSWORD=YOUR DB PASSWORD
-MYSQL_PASSWORD: 'YOUR DB PASSWORD'
-MYSQL_ROOT_PASSWORD: 'YOUR ROOT PASSWORD'
+environment: &base_env
+  MYSQL_DATABASE: 'dmojdb'
+  MYSQL_USER: 'dmoj'
+  MYSQL_PASSWORD: 'DATABASE DMOJ PASSWORD'
+  MYSQL_ROOT_PASSWORD: 'DATABASE ROOT PASSWORD'
+  SECRET_KEY: 'DJANGO SECRET KEY'
+  HOST: 'WEBSITE HOSTNAME'
+  DEBUG: 0
 ```
 
-Keep in mind that both instances of `YOUR DB PASSWORD` should be the same, `YOUR ROOT PASSWORD` can be anything, and in both instances of `YOUR SECRET KEY`, the same Django secret key should be used.
+The `MYSQL_DATABASE`, `MYSQL_USER`, and `DEBUG` can be left alone. Change the latter to `1` for Django testing. Set `HOST` to your hostname, such as `judge.theavid.dev`. `MYSQL_PASSWORD` is the password for the databse which images will use. While the database is only accessible locally, it's still a good idea to make a good password. The `MYSQL_ROOT_PASSWORD` is unused within DMOJ but is required for mariadb. Finally, `SECRET_KEY` is the Djano secret key. It is vital that it is kept secure.
 
 #### Final docker isntallation:
 Run `./scripts/install.sh` to build the docker images and dmoj database. This will migrate all necessary migrations and build static files. Keep in mind, you may have to run this twice as the `dmojdb` container takes some time to initalize.
