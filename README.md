@@ -30,7 +30,7 @@ mv local_settings.py repo/dmoj/
 
 #### Website secrets:
 Define the Django secret keys and database passwords in `docker-compose.yml`. This means changing the `environment` sections from:
-```abnf
+```py
 MYSQL_DATABASE: 'dmojdb'
 MYSQL_USER: 'dmoj'
 MYSQL_PASSWORD: 'DATABASE DMOJ PASSWORD'
