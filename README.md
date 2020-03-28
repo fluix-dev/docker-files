@@ -12,12 +12,19 @@ This is a branch with the docker files to host [my judge](https://judge.theavid.
 ## Installation
 #### Global:
 Clone this branch, pull submodule repositories, and apply PhantomJS patch with:
-```
+```sh
 git clone -b website https://github.com/TheAvidDev/docker-files.git
 cd docker-files
 git submodule init
 git submodule update
 curl -L https://gist.githubusercontent.com/TheAvidDev/4b9394e948869ccf8117703dc288c6ef/raw/29681cb75b0cbd49ba09e64b6208018027e283b9/py | git apply
+```
+
+Move config files into proper folders:
+```
+mv config.js repo/websocket/
+mv uwsgi.ini repo/
+mv local_settings.py repo/dmoj/
 ```
 
 #### Website secrets:
@@ -37,7 +44,7 @@ Run `./scripts/install.sh` to build the docker images and dmoj database. This wi
 ## Maintaining
 To run everything, use the following in the clone folder:
 ```
-docker-compose up
+docker-compose up -d
 ```
 
 To update migrations, run:
@@ -52,7 +59,7 @@ To compile and collect static files, run:
 
 ## Nginx Configuration
 This image exposes an nginx webserver on port `81`. You should install another nginx webserver on the host (or a separate container) that proxies connections to this one. An example configuration would look as such:
-```sh
+```nginx
 server {
     # Remove the two lines below to only allow ssl connections.
     # If you do this, you should uncomment, and update the final ssl section.
