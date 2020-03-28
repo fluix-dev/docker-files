@@ -1,19 +1,13 @@
 version: '3'
 
 services:
-  # Web server and certificate creation
   nginx:
     image: nginx
     restart: always
     ports:
       - 81:81
     volumes:
-      # Global
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-
-      # DMOJ
       - uwsgi_volume:/uwsgi
       - ./repo:/online-judge
       - pdfcache:/pdfcache
