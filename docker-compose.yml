@@ -22,15 +22,21 @@ services:
     build:
       context: .
       dockerfile: ./base/Dockerfile
+    environment: &base_env
+      MYSQL_DATABASE: 'dmojdb'
+      MYSQL_USER: 'dmoj'
+      MYSQL_PASSWORD: 'DATABASE DMOJ PASSWORD'
+      MYSQL_ROOT_PASSWORD: 'DATABASE ROOT PASSWORD'
+      SECRET_KEY: 'DJANGO SECRET KEY'
+      HOST: 'WEBSITE HOSTNAME'
+      DEBUG: 0
     image: dmoj-base
 
   dmoj:
     build: ./dmoj
     image: dmoj:dmoj
     restart: always
-    environment:
-      - SECRET_KEY=YOUR SECRET KEY
-      - DB_PASSWORD=YOUR DB PASSWORD
+    environment: *base_env
     volumes:
       - uwsgi_volume:/uwsgi
       - ./repo:/online-judge
@@ -43,7 +49,6 @@ services:
       - websocket_network
     depends_on:
       - dmojdb
-      - bridge
       - websocket
       - phantomjs
     container_name: dmoj
@@ -51,11 +56,7 @@ services:
   dmojdb:
     image: mariadb
     restart: always
-    environment:
-      MYSQL_DATABASE: 'dmojdb'
-      MYSQL_USER: 'dmoj'
-      MYSQL_PASSWORD: 'YOUR DB PASSWORD'
-      MYSQL_ROOT_PASSWORD: 'YOUR ROOT PASSWORD'
+    environment: *base_env
     networks:
       - dmojdb_network
     volumes:
@@ -68,11 +69,9 @@ services:
     restart: always
     ports:
       - 9999:9999
-    environment:
-      - SECRET_KEY=YOUR SECRET KEY
-      - DB_PASSWORD=YOUR DB PASSWORD
     volumes:
       - ./repo:/online-judge
+    environment: *base_env
     networks:
       - dmojdb_network
       - bridge_network
@@ -80,6 +79,7 @@ services:
     depends_on:
       - websocket
       - dmojdb
+      - dmoj
     container_name: bridge
 
   websocket:

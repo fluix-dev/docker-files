@@ -11,14 +11,15 @@ import os
 # SECURITY WARNING: keep the secret key used in production secret!
 # You may use <http://www.miniwebtool.com/django-secret-key-generator/>
 # to generate this key.
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ.get('SECRET_KEY', ' ')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # Change to False once you are done with runserver testing.
+DEBUG = os.environ.get('DEBUG', '0') == '1'
+HOST = os.environ.get('HOST', '')
 
 # Uncomment and set to the domain names this site is intended to serve.
 # You must do this once you set DEBUG to False.
-ALLOWED_HOSTS = ['judge.theavid.dev']
+ALLOWED_HOSTS = [HOST]
 
 # Optional apps that DMOJ can make use of.
 INSTALLED_APPS += (
@@ -312,3 +313,5 @@ LOGGING = {
 ## ======== Custom Configuration ========
 # You may add whatever django configuration you would like here.
 # Do try to keep it separate so you can quickly patch in new settings.
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
