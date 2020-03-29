@@ -1,13 +1,12 @@
-FROM node:8.17.0
+FROM node:8-stretch-slim
 
 RUN apt-get update && \
-    apt-get install -y librsvg2-dev mocha git
+    apt-get install -y librsvg2-dev git make g++
 
-RUN npm install mathoid && \
-    ln -sfv /node_modules/mathoid/app.js /node_modules/app.js
-
-COPY config.yaml /node_modules/mathoid/
+RUN git clone https://github.com/wikimedia/mathoid
+WORKDIR /mathoid
+RUN npm install
 
 EXPOSE 10044
-WORKDIR /node_modules/mathoid
-CMD /node_modules/mathoid/server.js
+
+CMD ["/mathoid/server.js"]
