@@ -160,5 +160,5 @@ volumes:
   uwsgi_volume:
   dmojdb_volume:
   cache:
-  phantombin:
   pdfcache:
+  phantombin:

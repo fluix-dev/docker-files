@@ -8,4 +8,4 @@ EXPOSE 15100
 EXPOSE 15101
 EXPOSE 15102
 
-ENTRYPOINT node /online-judge/websocket/daemon.js
+ENTRYPOINT ["node","/online-judge/websocket/daemon.js"]
