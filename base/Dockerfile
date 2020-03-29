@@ -1,7 +1,7 @@
-FROM python:buster
+FROM python:slim
 ENV PYTHONBUFFERED 1
 
-RUN apt-get update && apt-get install -y git curl gcc g++ make gettext sed
+RUN apt-get update && apt-get install -y git curl gcc g++ make gettext sed libmariadbclient-dev fontconfig
 
 RUN pip install redis
 RUN pip install mysqlclient
