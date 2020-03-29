@@ -9,6 +9,7 @@ This is a branch with the docker files for running the [DMOJ](https://github.com
  * `celery` - celery scheduler image.
  * `redis` - dependancy for celery handling data storage.
  * `mathoid` - wikimedia mathoid rendering.
+ * `texoid` - latex rendering.
  
  **IMPORANT:** this branch does not contain a DMOJ [`judge-server`](https://github.com/DMOJ/judge-server), only the frontend website. For judges, please see [their documentation](https://docs.dmoj.ca/#/judge/linux_installation) and connect them to port `9999` which the `bridge` container exposes.
  
@@ -18,7 +19,7 @@ Clone this branch and pull submodule repositories:
 ```sh
 git clone -b website https://github.com/TheAvidDev/docker-files.git
 cd docker-files
-git submodule init
+git submodule init --recursive
 git submodule update
 ```
 
