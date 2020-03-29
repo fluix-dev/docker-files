@@ -51,6 +51,7 @@ services:
       - dmoj_dmojdb
       - dmoj_redis
       - dmoj_mathoid
+      - dmoj_texoid
       - websocket_net
     depends_on:
       - dmojdb
@@ -58,6 +59,7 @@ services:
       - phantomjs
       - celery
       - mathoid
+      - texoid
 
   dmojdb:
     container_name: dmojdb
@@ -137,6 +139,14 @@ services:
     networks:
       - dmoj_mathoid
 
+  texoid:
+    container_name: texoid
+    image: texoid:texoid
+    build: ./texoid
+    restart: always
+    networks:
+      - dmoj_texoid
+
 networks:
   nginx_dmoj:
     driver: bridge
@@ -149,6 +159,8 @@ networks:
   dmoj_redis:
     driver: bridge
   dmoj_mathoid:
+    driver: bridge
+  dmoj_texoid:
     driver: bridge
   celery_redis:
     driver: bridge

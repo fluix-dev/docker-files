@@ -323,3 +323,8 @@ CELERY_RESULT_BACKEND = 'redis://redis:6379'
 MATHOID_URL = 'http://mathoid:10044'
 MATHOID_CACHE_ROOT = '/cache/mathoid/'
 MATHOID_CACHE_URL = '//{host}/mathoid/'.format(host=HOST)
+
+## ======== Texoid Configuration ========
+TEXOID_URL = 'http://texoid:8888'
+TEXOID_CACHE_ROOT = '/cache/texoid/'
+TEXOID_CACHE_URL = '//{host}/texoid/'.format(host=HOST)
