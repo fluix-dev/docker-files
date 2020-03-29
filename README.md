@@ -1,5 +1,5 @@
 # Docker Files - DMOJ
-This is a branch with the docker files for running the [DMOJ](https://github.com/DMOJ/online-judge) frontend. It runs the following containers:
+This is a branch with the docker files for running the [DMOJ](https://github.com/DMOJ/online-judge) frontend. You can view a running instance [here](https://judge.theavid.dev). Keep in mind that it may be occasionnaly unavailable during development. It runs the following containers:
  * `nginx` - the nginx web server for serving the websites and static files.
  * `dmoj` - the dmoj site (`online-judge`) acting as the frontend for judges.
  * `dmojdb` - dmoj database.
