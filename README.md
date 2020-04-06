@@ -17,7 +17,7 @@ This is a branch with the docker files for running the [DMOJ](https://github.com
 #### Global:
 Clone this branch and pull submodule repositories:
 ```sh
-git clone -b website https://github.com/TheAvidDev/docker-files.git
+git clone -b dmoj https://github.com/TheAvidDev/docker-files.git
 cd docker-files
 git submodule init --recursive
 git submodule update
