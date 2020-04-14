@@ -7,11 +7,8 @@ Each branch is a separate set of files that can be used with their own `README` 
 
 ## Supported Branches
 Currently, the following branches exist:
- * `website` - [My site](https://theavid.dev) along with [my judge](https://judge.theavid.dev) ([DMOJ](https://github.com/DMOJ/online-judge) clone).
+ * `dmoj` - [DMOJ](https://github.com/DMOJ/online-judge) instance with all necessary components along with some optional features.
  
 ## WIP Branches
 A collection of either planned branches or work-in-progress ones:
- * `website` - [My site](https://theavid.dev) along with [my judge](https://judge.theavid.dev) ([DMOJ](https://github.com/DMOJ/online-judge) clone).
- * `site` - Standalone [site](https://github.com/TheAvidDev/site) with nginx.
- * `judge` - Standalone [DMOJ site](https://github.com/DMOJ/online-judge).
- * `blog` - Standalone [blog](https://github.com/TheAvidDev/blog), to-be-created.
+ * `site` - [My site](https://theavid.dev) which is being developed [here](https://github.com/TheAvidDev/site).
