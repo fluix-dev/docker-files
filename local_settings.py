@@ -253,9 +253,17 @@ LOGGING = {
     },
     'handlers': {
         # You may use this handler as example for logging to other files..
-        'discord_integration': {
-            'level': 'WARNING',
-            'class': 'discord_integration.log.DiscordMessageHandler',
+        'bridge': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'bridge.log',
+            'maxBytes': 10 * 1024 * 1024,
+            'backupCount': 10,
+            'formatter': 'file',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'dmoj.throttle_mail.ThrottledEmailHandler',
         },
         'console': {
             'level': 'DEBUG',
@@ -266,25 +274,15 @@ LOGGING = {
     'loggers': {
         # Site 500 error mails.
         'django.request': {
-            'handlers': ['discord_integration'],
+            'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
         },
         # Judging logs as received by bridged.
         'judge.bridge': {
-            'handlers': ['discord_integration'],
+            'handlers': ['bridge', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
-        },
-        'event_socket_server': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propogate': True,
-        },
-        'judge.problem.pdf': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propogate': True,
         },
         # Catch all log to stderr.
         '': {
