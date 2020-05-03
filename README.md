@@ -5,7 +5,6 @@ This is a branch with the docker files for running the [DMOJ](https://github.com
  * `dmojdb` - dmoj database.
  * `bridge` - the bridge to connect the dmoj frontend site with judges.
  * `websocket` - websocket for live updates on the site.
- * `phantomjs` - phantomjs image to generate pdf versions of dmoj site problems.
  * `celery` - celery scheduler image.
  * `redis` - dependancy for celery handling data storage.
  * `mathoid` - wikimedia mathoid rendering.
@@ -19,8 +18,7 @@ Clone this branch and pull submodule repositories:
 ```sh
 git clone -b dmoj https://github.com/TheAvidDev/docker-files.git
 cd docker-files
-git submodule init --recursive
-git submodule update
+git submodule update --init --recursive
 ```
 
 Move config files into proper folders:
