@@ -1,4 +1,5 @@
 #!/bin/sh
+docker-compose build base
 docker-compose run --rm --entrypoint "/bin/sh -c '\
         python manage.py migrate && \
         python manage.py loaddata language_small && \
