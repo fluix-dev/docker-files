@@ -1,5 +1,8 @@
 # Docker Files - DMOJ
-This is a branch with the docker files for running the [DMOJ](https://github.com/DMOJ/online-judge) frontend. You can view a running instance [here](https://judge.theavid.dev). Keep in mind that it may be occasionnaly unavailable during development. It runs the following containers:
+This is a branch with the docker files for running the
+[DMOJ](https://github.com/DMOJ/online-judge) frontend. You can view a running
+instance [here](https://judge.theavid.dev). Keep in mind that it may be
+occasionnaly unavailable during development. It runs the following containers:
  * `nginx` - the nginx web server for serving the websites and static files.
  * `dmoj` - the dmoj site (`online-judge`) acting as the frontend for judges.
  * `dmojdb` - dmoj database.
@@ -10,7 +13,11 @@ This is a branch with the docker files for running the [DMOJ](https://github.com
  * `mathoid` - wikimedia mathoid rendering.
  * `texoid` - latex rendering.
  
- **IMPORANT:** this branch does not contain a DMOJ [`judge-server`](https://github.com/DMOJ/judge-server), only the frontend website. For judges, please see [their documentation](https://docs.dmoj.ca/#/judge/linux_installation) and connect them to port `9999` which the `bridge` container exposes.
+ **IMPORANT:** this branch does not contain a DMOJ
+ [`judge-server`](https://github.com/DMOJ/judge-server), only the frontend
+ website. For judges, please see
+ [their documentation](https://docs.dmoj.ca/#/judge/linux_installation) and
+ connect them to port `9999` which the `bridge` container exposes.
  
 ## Installation
 #### Global:
@@ -29,7 +36,8 @@ mv local_settings.py repo/dmoj/
 ```
 
 #### Website secrets:
-Define the Django secret keys and database passwords in `docker-compose.yml`. This means changing the `environment` sections from:
+Define the Django secret keys and database passwords in `docker-compose.yml`.
+This means changing the `environment` sections from:
 ```py
 MYSQL_DATABASE: 'dmojdb'
 MYSQL_USER: 'dmoj'
@@ -40,10 +48,19 @@ HOST: 'WEBSITE HOSTNAME'
 DEBUG: 0
 ```
 
-The `MYSQL_DATABASE`, `MYSQL_USER`, and `DEBUG` can be left alone. Change the latter to `1` for Django testing. Set `HOST` to your hostname, such as `judge.theavid.dev`. `MYSQL_PASSWORD` is the password for the databse which images will use. While the database is only accessible locally, it's still a good idea to make a good password. The `MYSQL_ROOT_PASSWORD` is unused within DMOJ but is required for mariadb. Finally, `SECRET_KEY` is the Djano secret key. It is vital that it is kept secure.
+The `MYSQL_DATABASE`, `MYSQL_USER`, and `DEBUG` can be left alone. Change the
+latter to `1` for Django testing. Set `HOST` to your hostname, such as
+`judge.theavid.dev`. `MYSQL_PASSWORD` is the password for the databse which
+images will use. While the database is only accessible locally, it's still a
+good idea to make a good password. The `MYSQL_ROOT_PASSWORD` is unused within
+DMOJ but is required for mariadb. Finally, `SECRET_KEY` is the Djano secret key.
+It is vital that it is kept secure.
 
 #### Final docker isntallation:
-Run `./scripts/install.sh` to build the docker images and dmoj database. This will migrate all necessary migrations and build static files. Keep in mind, you may have to run this twice as the `dmojdb` container takes some time to initalize.
+Run `./scripts/install.sh` to build the docker images and dmoj database. This
+will migrate all necessary migrations and build static files. Keep in mind, you
+may have to run this twice as the `dmojdb` container takes some time to
+initalize.
 
 ## Maintaining
 To run everything, use the following in the clone folder:
@@ -62,17 +79,25 @@ To compile and collect static files, run:
 ```
 
 #### Update Procedure
-The probable update procedure would be to pull the repo and then run either the migrate script (if a migration was added) and/or the static compilation and collection script (if static files were updated).
+The probable update procedure would be to pull the repo and then run either the
+migrate script (if a migration was added) and/or the static compilation and
+collection script (if static files were updated).
 
-It may also be necessary to update (rebuild) the images if, for example, python requirements have changed. This can be done by building the docker images without using the docker cache.
+It may also be necessary to update (rebuild) the images if, for example, python
+requirements have changed. This can be done by building the docker images
+without using the docker cache.
 ```
 docker-compose build --no-cache
 ```
 
-Keep in mind that the containers running said images will have to be turned off (either killed with `docker kill` or brought down `docker-compose down`).
+Keep in mind that the containers running said images will have to be turned off
+(either killed with `docker kill` or brought down `docker-compose down`).
 
 ## Nginx Configuration
-This image exposes an nginx webserver on port `81`. You should install another nginx webserver on the host (or a separate container) that proxies connections to this one. An example configuration for that nginx instance would look as such:
+This image exposes an nginx webserver on port `81`. You should install another
+nginx webserver on the host (or a separate container) that proxies connections
+to this one. An example configuration for that nginx instance would look as
+such:
 ```nginx
 server {
     # Remove the two lines below to only allow ssl connections.
@@ -105,4 +130,6 @@ server {
     #ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 }
 ```
-You can modify on which port nginx runs or exposes itself on by either modifying the `ports:` directive of the `docker-compose.yml` file and/or by changing the nginx config in `/nginx/conf.d/default.conf`.
+You can modify on which port nginx runs or exposes itself on by either
+modifying the `ports:` directive of the `docker-compose.yml` file and/or
+by changing the nginx config in `/nginx/conf.d/default.conf`.
