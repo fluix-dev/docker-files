@@ -230,7 +230,9 @@ DMOJ_PDF_PROBLEM_CACHE = '/pdfcache'
 DMOJ_PDF_PROBLEM_INTERNAL = 'pdfcache'
 
 # Path to a PhantomJS executable.
-PHANTOMJS = '/phantomjs/phantomjs'
+#PHANTOMJS = '/phantomjs/phantomjs'
+
+USE_SELENIUM = True
 
 # If you can't use PhantomJS or prefer wkhtmltopdf, set the path to wkhtmltopdf executable instead.
 #WKHTMLTOPDF = '/usr/local/bin/wkhtmltopdf'
